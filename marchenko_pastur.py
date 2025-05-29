@@ -7,16 +7,16 @@ from scipy.signal import unit_impulse
 parameters
 '''
 # number of states
-N = 2000
+N = 1000
 # number of observations
-T = 1000
+T = 2000
 # ratio of num. of states to num. of observations
 q = N/T
 
 # non-symmetric random matrix
 X = np.random.normal(0, 1, (T, N))
 # NxN covariance
-Y = 1/N * X.T @ X
+Y = 1/T * X.T @ X
 # compute the eigenvalues
 eigval = np.linalg.eigvalsh(Y)
 print(eigval)
@@ -40,16 +40,16 @@ print(np.array(np.where(eigval < 1e-10)).size)
 
 
 plt.plot(x_val, rho_x, 'chocolate')
-bins = [eigval.min(), 1e-3, 1e-2, 1e-1, 1, 4]
-plt.hist(eigval, bins=50, density=True, color='bisque', label='Eigenvalue Distribution')
+bins = np.linspace(lambda_m, lambda_p, num=20)
+plt.hist(eigval, bins=bins, density=True, color='bisque')
 plt.xlabel(r'$x$')
-plt.ylabel(r'$\rho(x)$')
-plt.title('Marchenko-Pastur Distribution')
-plt.legend()
-plt.ylim(0, 1)
+plt.ylabel(r'$\rho_{MP}(x)$')
+plt.title('Marchenko-Pastur (MP) Distribution')
+plt.legend(['Theoretical MP Curve', 'Eigenvalue Distribution'])
 plt.show()
 
 '''
+FOR N>T NORMALIZE EIGVALS 
 get rid of zero eigenvalues (N-T) etc.
 average over many random matrices
 look at arabind'or philipp's papers
