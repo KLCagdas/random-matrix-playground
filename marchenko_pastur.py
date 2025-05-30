@@ -7,9 +7,9 @@ from scipy.signal import unit_impulse
 parameters
 '''
 # number of states
-N = 1000
+N = 2000
 # number of observations
-T = 2000
+T = 1000
 # ratio of num. of states to num. of observations
 q = N/T
 
@@ -19,7 +19,6 @@ X = np.random.normal(0, 1, (T, N))
 Y = 1/T * X.T @ X
 # compute the eigenvalues
 eigval = np.linalg.eigvalsh(Y)
-print(eigval)
 
 # marcenko-pastur bounds
 lambda_p = (1 + sqrt(q))**2
@@ -30,34 +29,33 @@ def mp_distribution(x, q, lambda_p, lambda_m):
     rho = np.sqrt(np.maximum((lambda_p - x)*(x - lambda_m), 0)) / (2 * pi * q * x)
     if q > 1:
         #rho[np.where(x == 0)] += (q - 1) / q
-        plt.axvline(x=0, linestyle='-', color='chocolate')
+        plt.axvline(x=0, linestyle='-', color='sienna', label='_nolegend_')
     return rho
 
 x_val = np.linspace(0, lambda_p + 1, 1000)
 rho_x = mp_distribution(x_val, q, lambda_p, lambda_m)
 
-print(np.array(np.where(eigval < 1e-10)).size)
+# number of zero eigenvalues
+# this is not necessary for T > N 
+nonzero_eig = eigval[eigval > 1e-10]
+num_zero_eig = np.array(np.where(eigval < 1e-10)).size
+print(num_zero_eig)
 
 
-plt.plot(x_val, rho_x, 'chocolate')
-bins = np.linspace(lambda_m, lambda_p, num=20)
-plt.hist(eigval, bins=bins, density=True, color='bisque')
+plt.plot(x_val, rho_x, 'sienna', label='Theoretical MP Curve')
+bins = np.linspace(lambda_m, lambda_p, num=40)
+plt.hist(nonzero_eig, bins=bins, density=True, color='bisque', label='Eigenvalue Distribution')
 plt.xlabel(r'$x$')
 plt.ylabel(r'$\rho_{MP}(x)$')
 plt.title('Marchenko-Pastur (MP) Distribution')
-plt.legend(['Theoretical MP Curve', 'Eigenvalue Distribution'])
+plt.legend()
+
+print(nonzero_eig)
+
 plt.show()
 
 '''
 FOR N>T NORMALIZE EIGVALS 
-get rid of zero eigenvalues (N-T) etc.
 average over many random matrices
 look at arabind'or philipp's papers
-it may make sense to bin the eigvals into order of magnitude
-'''
-
-'''
-QUESTIONS
-1. why do we need to get rid of zero eigvals?
-2. why is there no eigval density for large values, i.e., after 3?
 '''
