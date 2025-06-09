@@ -1,7 +1,5 @@
 import numpy as np
 from math import sqrt
-from random_matrices import projector
-from marchenko_pastur import mp_distribution, mp_plot
 
 class RandomMatrix():
     def __init__(self, N, T):
@@ -27,8 +25,24 @@ class RandomMatrix():
         # number of zero eigenvalues
         self.num_zero_eig = np.array(np.where(eig_X < 1e-10)).size
 
+    def wigner(self, var):
+        # define a non-symmetric Gaussian matrix
+        H = np.random.normal(loc=0.0, scale=var**2/self.N, size=(self.N, self.N))
 
-""" P, _ = projector(0.3, N)
-Y = X @ P
-C_Y = Y.T @ Y
-eig_Y = np.linalg.eigvalsh(C_Y) """
+        # return a Wigner matrix
+        return var * (H + H.T) / sqrt(2*self.N)
+    
+    def projector(self, var):
+        # create a Wigner matrix
+        W = self.wigner(var)
+        # diagonalize W 
+        eigval, V = np.linalg.eigh(W)
+        # define Lambda to be diagonal matrix of eigenvalues
+        L = np.sign(np.diag(eigval))
+        # generate a random symmetric real orthogonal matrix by a similarity transformation
+        M = V @ L @ np.linalg.inv(V)
+        # create a random projector
+        P = 0.5 * (M + np.ones(self.N)) 
+
+        return P, M
+
