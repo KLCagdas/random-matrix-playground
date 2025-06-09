@@ -3,13 +3,15 @@ from math import pi
 import matplotlib.pyplot as plt
 
 # theoretical Marcenko-Pastur (MP) distribution
-def mp_distribution(x, q, lambda_p, lambda_m):
-    # you can also change below to true false statement
+def mp_distribution(q, lambda_p, lambda_m):
+    # x values for MP distribution
+    x = np.linspace(lambda_m, lambda_p + 1, 1000)
+    # the line below can be replaced by a true-false statement
     rho = np.sqrt(np.maximum((lambda_p - x)*(x - lambda_m), 0)) / (2 * pi * q * x)
     if q > 1:
         # rescale the density since non-zero eigenvalues are removed
         rho *= q
-    return rho
+    return x, rho
 
 def mp_plot(x, rho, lambda_m, lambda_p, eigvals):
     # plot the marchenko-pastur distribution
