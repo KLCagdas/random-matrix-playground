@@ -15,17 +15,17 @@ def mp_distribution(q, lambda_p, lambda_m):
 
 def mp_plot(x, rho, lambda_m, lambda_p, eigvals):
     # plot the marchenko-pastur distribution
-    plt.plot(x, rho, 'sienna', label='Theoretical MP Curve')
+    plt.plot(x, rho, 'sienna', label='Semi-analytic Distribution')
     # bins for eigenvalue distribution
     bins = np.linspace(lambda_m, lambda_p, num=40)
     # plot the histogram of eigenvalues
-    plt.hist(eigvals, bins=bins, density=True, color='bisque', label='Eigenvalue Distribution')
+    plt.hist(eigvals, bins=bins, density=True, color='bisque', label='Empirical Distribution')
     # label the plot
     plt.xlabel(r'$x$')
     plt.ylabel(r'$\rho_{MP}(x)$')
     plt.title('Marchenko-Pastur (MP) Distribution')
     # plot the theoretical MP bounds
-    plt.axvline(x=lambda_m, linestyle='--', color='k', label='Theoretical Bound', alpha=0.5, linewidth=0.8)
+    plt.axvline(x=lambda_m, linestyle='--', color='k', label='Analytic Bounds', alpha=0.5, linewidth=0.8)
     plt.axvline(x=lambda_p, linestyle='--', color='k', label='_nolegend_', alpha=0.5, linewidth=0.8)
 
     plt.legend()

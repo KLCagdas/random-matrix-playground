@@ -3,12 +3,12 @@ from marchenko_pastur import mp_distribution, mp_plot
 import numpy as np
 
 # create a random matrix
-X = RandomMatrix(1000, 2000)
+X = RandomMatrix(2000, 1000)
 # compute the eigvals of its covariance
 X.covariance()
 # calculate the Marcenko-Pastur distribution
-x, rho = mp_distribution(X.q, X.lambda_p, X.lambda_m)
-#mp_plot(x, rho, X.lambda_m, X.lambda_p, X.nonzero_eig)
+""" x, rho = mp_distribution(X.q, X.lambda_p, X.lambda_m)
+mp_plot(x, rho, X.lambda_m, X.lambda_p, X.nonzero_eig) """
 
 # variance of the random projector
 sigma_M = 0.3
@@ -17,11 +17,17 @@ P, _ = X.projector(sigma_M)
 # take a random projection of X
 Y = X.X @ P
 # compute the covariance of the projection
-C_Y = 1/X.N * Y.T @ Y
+# variance of Y is 0.5 since half of the directions are killed
+C_Y = 1/(X.T * 0.5**2) * Y.T @ Y
 # compute the eigenvalues of the covariance
 eig_Y = np.linalg.eigvalsh(C_Y)
+
+nonzero_eig = eig_Y[eig_Y > 1e-10]
+
+x, rho = mp_distribution(X.q, X.lambda_p, X.lambda_m)
+
 # plot the MP and eigenvalue distribution
-mp_plot(x, rho, X.lambda_m, X.lambda_p, eig_Y)
+mp_plot(x, rho, X.lambda_m, X.lambda_p, nonzero_eig)
 
 '''
 # RANDOM PROJECTION
