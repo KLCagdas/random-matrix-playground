@@ -32,17 +32,32 @@ class RandomMatrix():
         # return a Wigner matrix
         return var * (H + H.T) / sqrt(2*self.N)
     
-    def projector(self, var):
+    def half_projector(self, var):
         # create a Wigner matrix
         W = self.wigner(var)
-        # diagonalize W 
+        # diagonalize W with eigh since W is symmetric
         eigval, V = np.linalg.eigh(W)
         # define Lambda to be diagonal matrix of eigenvalues
         L = np.sign(np.diag(eigval))
-        # generate a random symmetric real orthogonal matrix by a similarity transformation
+        # generate a random symmetric real orthogonal matrix 
         M = V @ L @ np.linalg.inv(V)
         # create a random projector
         P = 0.5 * (M + np.ones(self.N)) 
 
         return P, M
+    
+    def m_projector(self, var, m):
+        # create a Wigner matrix
+        W = self.wigner(var)
+        # diagonalize W 
+        eigval, V = np.linalg.eigh(W)
+        # sort eigenvalues in descending order and get indices
+        idx = np.argsort(eigval)[::-1]
+        # create a diagonal matrix with the largest m eigenvalues, others set to zero
+        L = np.zeros_like(eigval)
+        L[idx[:m]] = eigval[idx[:m]]
+        # construct the projector matrix
+        P = V @ np.diag(L) @ np.linalg.inv(V)
+        
+        return P
 

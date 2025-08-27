@@ -30,3 +30,4 @@ def mp_plot(x, rho, lambda_m, lambda_p, eigvals):
 
     plt.legend()
     plt.show()
+ 
