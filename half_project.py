@@ -1,5 +1,5 @@
 from random_matrix import RandomMatrix
-from marchenko_pastur import mp_distribution, mp_plot
+from marchenko_pastur import mp_distribution_half, mp_plot
 import numpy as np
 
 # create a random matrix
@@ -10,24 +10,24 @@ X.covariance()
 """ x, rho = mp_distribution(X.q, X.lambda_p, X.lambda_m)
 mp_plot(x, rho, X.lambda_m, X.lambda_p, X.nonzero_eig) """
 
-# variance of the random projector
+# std of the random projector
 sigma_M = 0.3
 # create a random projector
 P, _ = X.half_projector(sigma_M)
 # take a random projection of X
 Y = X.X @ P
 # compute the covariance of the projection
-# variance of Y is 0.5 since half of the directions are killed
+# std of Y is 0.5 since half of the directions are killed
 C_Y = 1/(X.T * 0.5**2) * Y.T @ Y
 # compute the eigenvalues of the covariance
 eig_Y = np.linalg.eigvalsh(C_Y)
 # Filter out eigenvalues that are effectively zero
 nonzero_eig = eig_Y[np.abs(eig_Y) > 1e-10]
 
-x, rho = mp_distribution(X.q, X.lambda_p, X.lambda_m)
+x, rho, lambda_m, lambda_p = mp_distribution_half(X.q)
 
 # plot the MP and eigenvalue distribution
-mp_plot(x, rho, X.lambda_m, X.lambda_p, nonzero_eig)
+mp_plot(x, rho, lambda_m, lambda_p, nonzero_eig)
 
 '''
 # RANDOM PROJECTION
