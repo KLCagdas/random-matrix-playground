@@ -2,29 +2,35 @@ import numpy as np
 from math import pi, sqrt
 import matplotlib.pyplot as plt
 
-# theoretical Marcenko-Pastur (MP) distribution
-def mp_distribution_half(q):
-    lambda_p = (1 + sqrt(q))**2
-    lambda_m = (1 - sqrt(q))**2
-    # x values for MP distribution
-    x = np.linspace(lambda_m, lambda_p + 1, 1000)
-    # the line below can be replaced by a true-false statement
-    rho = np.sqrt(np.maximum((lambda_p - x)*(x - lambda_m), 0)) / (2 * pi * q * x)
-    if q > 1:
-        # rescale the density since non-zero eigenvalues are removed
-        rho *= q
-    return x, rho, lambda_m, lambda_p
-    
-# theoretical Marcenko-Pastur (MP) distribution
-def mp_distribution_m(q, q_p, gamma):
-    lambda_p = (1 + sqrt(q_p))**2
-    lambda_m = (1 - sqrt(q_p))**2
-    # x values for MP distribution
-    x = np.linspace(lambda_m, lambda_p + 1, 1000)
-    # the line below can be replaced by a true-false statement
-    # mulptiply by 1/gamma since non-zero part of the spectrum sums up to gamma
-    rho = 1 / gamma * np.sqrt(np.maximum((lambda_p - x)*(x - lambda_m), 0)) / (2 * pi * q * x)
+def mp_distribution(q, q_p=None, gamma=None):
+    """
+    Computes the theoretical Marchenko-Pastur (MP) distribution.
 
+    Parameters:
+        q (float): Ratio parameter.
+        q_p (float, optional): Ratio parameter when projecting onto m directions.
+        gamma (float, optional): Scaling factor when projecting onto m directions.
+
+    Returns:
+        x (ndarray): x values for MP distribution.
+        rho (ndarray): MP density values.
+        lambda_m (float): Lower bound of MP support.
+        lambda_p (float): Upper bound of MP support.
+    """
+    if q_p is not None and gamma is not None:
+        # Modified MP distribution
+        lambda_p = (1 + sqrt(q_p))**2
+        lambda_m = (1 - sqrt(q_p))**2
+        x = np.linspace(lambda_m, lambda_p + 1, 1000)
+        rho = 1 / gamma * np.sqrt(np.maximum((lambda_p - x)*(x - lambda_m), 0)) / (2 * pi * q * x)
+    else:
+        # Standard MP distribution
+        lambda_p = (1 + sqrt(q))**2
+        lambda_m = (1 - sqrt(q))**2
+        x = np.linspace(lambda_m, lambda_p + 1, 1000)
+        rho = np.sqrt(np.maximum((lambda_p - x)*(x - lambda_m), 0)) / (2 * pi * q * x)
+        if q > 1:
+            rho *= q
     return x, rho, lambda_m, lambda_p
 
 def mp_plot(x, rho, lambda_m, lambda_p, eigvals):
