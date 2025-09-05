@@ -30,6 +30,9 @@ class RandomMatrix():
         return H + H.T
     
     def half_projector(self, std):
+        """
+        Performs half random matrix projection analysis and returns nonzero eigenvalues.
+        """
         # create a Wigner matrix
         W = self.wigner(std)
         # diagonalize W with eigh since W is symmetric
@@ -39,28 +42,23 @@ class RandomMatrix():
         # generate a random symmetric real orthogonal matrix 
         M = V @ L @ np.linalg.inv(V)
         # create a random projector
-        P = 0.5 * (M + np.ones(self.N)) 
-
-        return P, M
-    
-    """ def m_projector(self, var, m):
-        self.q_p = m / self.T
-        # create a Wigner matrix
-        W = self.wigner(var)
-        # diagonalize W 
-        eigval, V = np.linalg.eigh(W)
-        # sort eigenvalues in descending order and get indices
-        idx = np.argsort(eigval)[::-1]
-        # create a diagonal matrix with the first m diagonals as 1, others as 0
-        L = np.zeros_like(eigval)
-        L[idx[:m]] = 1
-        # construct the projector matrix
-        P = V @ np.diag(L) @ np.linalg.inv(V)
-
-        return P """
+        P = 0.5 * (M + np.ones(self.N))
+        # take a random projection of X
+        Y = self.X @ P
+        # std of Y is 0.5 since half of the directions are killed
+        C_Y = 1/(self.T * 0.5**2) * Y.T @ Y
+        # compute the eigenvalues of the covariance
+        eig_Y = np.linalg.eigvalsh(C_Y)
+        # Filter out eigenvalues that are effectively zero
+        nonzero_eig = eig_Y[np.abs(eig_Y) > 1e-10]
+        return nonzero_eig
     
     def m_projector(self, std, m):
+        """
+        Performs random matrix projection analysis and returns gamma and nonzero eigenvalues.
+        """
         self.q_p = m / self.T
+        gamma = m / self.N
         # create a Wigner matrix
         W = self.wigner(std)
         # diagonalize W 
@@ -72,6 +70,14 @@ class RandomMatrix():
         L[idx[:m]] = 1
         # construct the projector matrix
         P = V @ np.diag(L) @ np.linalg.inv(V)
+        # take a random projection of X
+        Y = self.X @ P
+        # define the Wishart ensemble 
+        C = 1/self.T * Y.T @ Y
+        # compute the eigenvalues of the covariance
+        eig_C = np.linalg.eigvalsh(C)
+        # Filter out eigenvalues that are effectively zero
+        nonzero_eig_C = eig_C[np.abs(eig_C) > 1e-12]
 
-        return P
+        return gamma, nonzero_eig_C
 

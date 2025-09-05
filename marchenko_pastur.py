@@ -22,6 +22,7 @@ def mp_distribution_m(q, q_p, gamma):
     # x values for MP distribution
     x = np.linspace(lambda_m, lambda_p + 1, 1000)
     # the line below can be replaced by a true-false statement
+    # mulptiply by 1/gamma since non-zero part of the spectrum sums up to gamma
     rho = 1 / gamma * np.sqrt(np.maximum((lambda_p - x)*(x - lambda_m), 0)) / (2 * pi * q * x)
 
     return x, rho, lambda_m, lambda_p
@@ -44,7 +45,9 @@ def mp_plot(x, rho, lambda_m, lambda_p, eigvals):
     # plot the theoretical MP bounds
     plt.axvline(x=lambda_m, linestyle='--', color='k', label='Analytic Bounds', alpha=0.5, linewidth=0.8)
     plt.axvline(x=lambda_p, linestyle='--', color='k', label='_nolegend_', alpha=0.5, linewidth=0.8)
-
+    # fix axes limits
+    plt.xlim(lambda_m - 0.1, lambda_p + 0.1)
+    plt.ylim(0, max(np.max(rho), np.max(counts)) * 1.1)
     plt.legend()
     plt.show()
  
