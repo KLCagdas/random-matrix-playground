@@ -20,7 +20,10 @@ class RandomMatrix():
         # nonzero eigenvalues
         self.nonzero_eig = eig_X[eig_X > 1e-10]
         # number of zero eigenvalues
-        self.num_zero_eig = np.array(np.where(eig_X < 1e-10)).size
+        self.num_zero_eig = np.count_nonzero(eig_X < 1e-10)
+        # MP bounds
+        self.lambda_p = (1 + sqrt(self.q))**2
+        self.lambda_m = (1 - sqrt(self.q))**2
 
     def wigner(self, std):
         # define a non-symmetric Gaussian matrix

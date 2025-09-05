@@ -39,11 +39,7 @@ def mp_plot(x, rho, lambda_m, lambda_p, eigvals):
     # bins for eigenvalue distribution
     bins = np.linspace(lambda_m, lambda_p, num=40)
     # plot the histogram of eigenvalues
-    counts, edges, _ = plt.hist(eigvals, bins=bins, density=True, color='bisque', label='Empirical Distribution')
-    # calculate if histogram sums up to 1
-    bin_widths = np.diff(edges)
-    hist_sum = np.sum(counts * bin_widths)
-    print(f"Histogram sums up to: {hist_sum:.4f}")
+    counts, _, _ = plt.hist(eigvals, bins=bins, density=True, color='bisque', label='Empirical Distribution')
     # label the plot
     plt.xlabel(r'$x$')
     plt.ylabel(r'$\rho_{MP}(x)$')
